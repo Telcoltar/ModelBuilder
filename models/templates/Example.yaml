@@ -20,5 +20,3 @@ properties:
       type: string
       modifiers:
         min: 5
-  - name: umgebung_prop
-    type: Umgebung

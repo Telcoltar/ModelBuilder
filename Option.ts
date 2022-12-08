@@ -1,5 +1,4 @@
 import {z, ZodTypeAny} from "zod"
-import {BaseModel} from "../models/common";
 
 type Nullable<K> = K | null
 
@@ -35,10 +34,10 @@ export const Some = <T>(value: T) => {
   return new Option({is_some: true, value: value})
 }
 
-type OptionType<IsComplex extends boolean, T extends BaseModel, K extends ZodTypeAny>
+type OptionType<IsComplex extends boolean, T , K extends ZodTypeAny>
   = IsComplex extends true ? Option<T> : Option<z.infer<K>>
 
-export const createOption = <IsComplex extends boolean, T extends BaseModel, K extends ZodTypeAny>(
+export const createOption = <IsComplex extends boolean, T , K extends ZodTypeAny>(
   data: any,
   isComplex: IsComplex,
   modelType: IsComplex extends true ? {fromJSON: (parsedJSON: any) => T} : K

@@ -1,12 +1,11 @@
 import { z } from "zod"
-import { createOption, createOptionSchema, Option, None } from "../../Option/Option"
-import {BaseModel} from "../common";
+import { createOption, createOptionSchema, Option, None } from "../../../Option"
 
 {%- for imp in imports %}
  {{ imp }}
 {%- endfor %}
 
-export class {{ name }} extends BaseModel {
+export class {{ name }} {
     {%- for prop in class_properties %}
     {{ prop.name }}{% if prop.optional %}?{% endif %}: {{ prop.type }} {% if prop.default is defined %}= {{ prop.default }}{% endif %}
     {%- endfor %}
@@ -25,7 +24,6 @@ export class {{ name }} extends BaseModel {
         {%- endfor -%}
         }
     ) {
-        super()
         {%- for prop in class_properties %}
         {% if prop.default is defined -%}
         if ({{ prop.name }}) {
