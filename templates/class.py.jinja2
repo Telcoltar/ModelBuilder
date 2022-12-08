@@ -1,0 +1,13 @@
+from Option import OptionNone, Option
+from pydantic import BaseModel, constr, conint
+
+{%- for imp in imports %}
+{{ imp }}
+{%- endfor %}
+
+
+class {{ name }}(BaseModel):
+    {%- for prop in properties %}
+    {{ prop }}
+    {%- endfor %}
+

@@ -1,0 +1,24 @@
+name: Example
+properties:
+  - name: string_prop
+    type: string
+    default: ""
+    optional:
+    modifiers:
+      min: 5
+  - name: int_prop
+    type: number
+    optional:
+    modifiers:
+      int:
+      gt: 10
+  - name: boolean_prop
+    type: boolean
+  - name: option_string_prop
+    type: Option
+    generic:
+      type: string
+      modifiers:
+        min: 5
+  - name: umgebung_prop
+    type: Umgebung
