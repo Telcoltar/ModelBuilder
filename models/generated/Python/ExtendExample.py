@@ -1,7 +1,7 @@
 from Option import OptionNone, Option
-from pydantic import BaseModel, constr, conint, confloat
+from pydantic import BaseModel, constr, conint, confloat, AnyUrl, HttpUrl
 from typing import Optional
-from Example import Example
+from .Example import Example
 
 
 class ExtendExample(Example):

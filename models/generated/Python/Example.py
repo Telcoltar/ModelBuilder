@@ -1,5 +1,5 @@
 from Option import OptionNone, Option
-from pydantic import BaseModel, constr, conint, confloat
+from pydantic import BaseModel, constr, conint, confloat, AnyUrl, HttpUrl
 from typing import Optional
 
 
@@ -9,3 +9,6 @@ class Example(BaseModel):
     int_prop: int
     boolean_prop: bool
     option_string_prop: Option[str]
+    url_prop: AnyUrl
+    http_url_prop: HttpUrl
+    float_prop: confloat(le=12)

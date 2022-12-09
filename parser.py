@@ -4,7 +4,7 @@ from yaml import load, Loader
 from jinja2 import FileSystemLoader, Environment, select_autoescape
 from pathlib import Path
 
-primitives = ["string", "number", "boolean", "integer"]
+primitives = ["string", "number", "boolean", "integer", "url", "HttpUrl"]
 
 
 def parse_modifier_to_z_modifier(modifier: str, modifier_value: str):
@@ -32,6 +32,8 @@ def parse_modifier_to_z_modifier(modifier: str, modifier_value: str):
         return ".optional()"
     if modifier == "trim":
         return ".trim()"
+    if modifier in ["url", "HttpUrl"]:
+        return ".url()"
 
 
 def get_z_type(input_type: str):
@@ -41,8 +43,10 @@ def get_z_type(input_type: str):
         return "z.number()"
     if input_type == "boolean":
         return "z.boolean()"
-    if input_type == "integer":
+    if input_type in ["int", "integer"]:
         return "z.number().int()"
+    if input_type in ["url", "HttpUrl"]:
+        return "z.string().url()"
 
 
 def get_ts_primitive_type(input_type: str):
@@ -52,8 +56,10 @@ def get_ts_primitive_type(input_type: str):
         return "number"
     if input_type == "boolean":
         return "boolean"
-    if input_type == "integer":
+    if input_type in ["int", "integer"]:
         return "number"
+    if input_type in ["url", "HttpUrl"]:
+        return "string"
 
 
 def get_primitive_py_type(input_type: str):
@@ -63,8 +69,12 @@ def get_primitive_py_type(input_type: str):
         return "float"
     if input_type == "boolean":
         return "bool"
-    if input_type == "integer":
+    if input_type in ["integer", "int"]:
         return "int"
+    if input_type == "url":
+        return "AnyUrl"
+    if input_type == "HttpUrl":
+        return "HttpUrl"
 
 
 def get_py_mod_type(input_type: str):
@@ -141,6 +151,7 @@ def build_ts(dict_repr, output_dir):
     z_properties = []
     class_properties = []
     classes_to_import = set()
+
     baseclass = dict_repr.get("baseclass")
     if baseclass is not None:
         classes_to_import.add(baseclass)
@@ -238,7 +249,7 @@ def build_py(dict_repr, output_dir):
         properties.append(current_property)
 
     imports = [
-        f"from {t} import {t}" for t in classes_to_import
+        f"from .{t} import {t}" for t in classes_to_import
     ]
 
     env = Environment(loader=FileSystemLoader("templates"), autoescape=select_autoescape())

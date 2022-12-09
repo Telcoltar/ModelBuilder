@@ -13,9 +13,7 @@ properties:
       int:
       gt: 10
   - name: int_prop
-    type: number
-    modifiers:
-      int:
+    type: integer
   - name: boolean_prop
     type: boolean
   - name: option_string_prop
@@ -24,3 +22,11 @@ properties:
       type: string
       modifiers:
         min: 5
+  - name: url_prop
+    type: url
+  - name: http_url_prop
+    type: HttpUrl
+  - name: float_prop
+    type: number
+    modifiers:
+      lte: 12
