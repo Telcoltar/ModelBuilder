@@ -1,2 +1,7 @@
 /node_modules/
 /dst/
+/.idea/
+/src/
+/package.json
+/package-lock.json
+/tsconfig.json
