@@ -4,7 +4,7 @@ from yaml import load, Loader
 from jinja2 import FileSystemLoader, Environment, select_autoescape
 from pathlib import Path
 
-primitives = ["string", "number", "boolean"]
+primitives = ["string", "number", "boolean", "integer"]
 
 
 def parse_modifier_to_z_modifier(modifier: str, modifier_value: str):
@@ -41,6 +41,8 @@ def get_z_type(input_type: str):
         return "z.number()"
     if input_type == "boolean":
         return "z.boolean()"
+    if input_type == "integer":
+        return "z.number().int()"
 
 
 def get_ts_primitive_type(input_type: str):
@@ -50,6 +52,8 @@ def get_ts_primitive_type(input_type: str):
         return "number"
     if input_type == "boolean":
         return "boolean"
+    if input_type == "integer":
+        return "number"
 
 
 def get_primitive_py_type(input_type: str):
@@ -59,6 +63,8 @@ def get_primitive_py_type(input_type: str):
         return "float"
     if input_type == "boolean":
         return "bool"
+    if input_type == "integer":
+        return "int"
 
 
 def get_py_mod_type(input_type: str):
@@ -140,7 +146,6 @@ def build_ts(dict_repr, output_dir):
         classes_to_import.add(baseclass)
 
     for prop in dict_repr["properties"]:
-        print(prop)
         current_z_string = f"{prop['name']}: "
         current_class_dict: dict[str, Union[str, bool]] = {"name": prop['name']}
 
@@ -204,7 +209,10 @@ def build_py(dict_repr, output_dir):
                 modifiers = [parse_modifier_to_py_modifier(mod, value)
                              for mod, value in prop['modifiers'].items() if mod not in ignored_modifiers]
                 if "int" in prop["modifiers"]:
-                    current_property += f"conint({','.join(modifiers)})"
+                    if len(modifiers) > 0:
+                        current_property += f"conint({','.join(modifiers)})"
+                    else:
+                        current_property += "int"
                 else:
                     current_property += f"{get_py_mod_type(prop['type'])}({','.join(modifiers)})"
             else:

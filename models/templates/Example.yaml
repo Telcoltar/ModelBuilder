@@ -6,12 +6,16 @@ properties:
     optional:
     modifiers:
       min: 5
-  - name: int_prop
+  - name: int_with_mod_prop
     type: number
     optional:
     modifiers:
       int:
       gt: 10
+  - name: int_prop
+    type: number
+    modifiers:
+      int:
   - name: boolean_prop
     type: boolean
   - name: option_string_prop
