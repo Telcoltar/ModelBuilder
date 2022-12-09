@@ -104,17 +104,17 @@ def get_ts_boolean(input_boolean: bool):
 
 def parse_ts_generic(current_z_string, current_class_dict, prop):
     generic_type = prop['generic']['type']
-    current_class_dict["type"] = f"{prop['type']}<{generic_type}>" \
-                                 f""
+    current_class_dict["type"] = f"{prop['type']}<{generic_type}>"
+
     if generic_type not in primitives:
         current_class_dict["creation"] = lambda data: f"create{prop['type']}({data}, true, {generic_type})"
         current_z_string += f"{generic_type}Schema)"
     else:
-        current_class_dict["creation"] = lambda data: f"create{prop['type']}({data}, false, {option_z_string})"
         option_z_string = get_z_type(generic_type)
         if "modifiers" in prop["generic"]:
             option_z_string += parse_modifiers_to_z_string(prop["generic"]["modifiers"])
         current_z_string += f"create{prop['type']}Schema({option_z_string})"
+        current_class_dict["creation"] = lambda data: f"create{prop['type']}({data}, false, {option_z_string})"
     return current_z_string, current_class_dict
 
 
@@ -203,6 +203,9 @@ def build_py(dict_repr, output_dir):
     for prop in dict_repr["properties"]:
         current_property = f"{prop['name']}: "
 
+        if "optional" in prop:
+            current_property += "Optional["
+
         if prop["type"] in primitives:
             if "modifiers" in prop:
                 ignored_modifiers = ["int"]
@@ -225,6 +228,9 @@ def build_py(dict_repr, output_dir):
         else:
             classes_to_import.add(prop["type"])
             current_property += prop["type"]
+
+        if "optional" in prop:
+            current_property += "]"
 
         if "default" in prop:
             current_property += f" = {prop['default']}"

@@ -1,5 +1,6 @@
 from Option import OptionNone, Option
 from pydantic import BaseModel, constr, conint, confloat
+from typing import Optional
 from Example import Example
 
 
