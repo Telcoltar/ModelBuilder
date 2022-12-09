@@ -1,0 +1,7 @@
+name: ExtendExample
+baseclass: Example
+properties:
+  - name: number_prop
+    type: number
+    modifiers:
+      lte: 5

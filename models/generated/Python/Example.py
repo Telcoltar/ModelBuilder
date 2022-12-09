@@ -1,5 +1,5 @@
 from Option import OptionNone, Option
-from pydantic import BaseModel, constr, conint
+from pydantic import BaseModel, constr, conint, confloat
 
 
 class Example(BaseModel):

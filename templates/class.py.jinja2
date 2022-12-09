@@ -1,12 +1,12 @@
 from Option import OptionNone, Option
-from pydantic import BaseModel, constr, conint
+from pydantic import BaseModel, constr, conint, confloat
 
 {%- for imp in imports %}
 {{ imp }}
 {%- endfor %}
 
 
-class {{ name }}(BaseModel):
+class {{ name }}({% if baseclass is not none %}{{ baseclass }}{% else %}BaseModel{% endif %}):
     {%- for prop in properties %}
     {{ prop }}
     {%- endfor %}

@@ -5,47 +5,27 @@ import { createOption, createOptionSchema, Option, None } from "../../../Option"
  {{ imp }}
 {%- endfor %}
 
-export class {{ name }} {
+export class {{ name }}{% if baseclass is not none %} extends {{ baseclass }}{% endif %} {
     {%- for prop in class_properties %}
     {{ prop.name }}{% if prop.optional %}?{% endif %}: {{ prop.type }} {% if prop.default is defined %}= {{ prop.default }}{% endif %}
     {%- endfor %}
 
-    constructor(
-        {
-        {%- for prop in class_properties -%}
-            {{ prop.name }}{% if not loop.last %},{% endif %}
-        {%- endfor -%}
-        } :
-        {
-        {%- for prop in class_properties -%}
-            {{ prop.name }}
-            {%- if prop.default is defined or prop.optional %}?{% endif %}:
-            {{- prop.type }}{% if not loop.last %},{% endif -%}
-        {%- endfor -%}
-        }
-    ) {
-        {%- for prop in class_properties %}
-        {% if prop.default is defined -%}
-        if ({{ prop.name }}) {
-            this.{{ prop.name }} = {{ prop.name }}
-        }
-        {%- else -%}
-        this.{{ prop.name }} = {{ prop.name }}
+    constructor(init: z.infer<typeof {{ name }}Schema>) {
+        {% if baseclass is not none -%}
+        super(init)
         {%- endif %}
+        {%- for prop in class_properties %}
+        this.{{ prop.name }} = {% if prop.complex %}{{ prop.creation("init." + prop.name) }}{% else %}init.{{ prop.name }}{% endif %}
         {%- endfor %}
     }
 
     static fromJSON(parsedJSON: any) {
         const validated = {{ name }}Schema.parse(parsedJSON)
-        return new {{ name }}({
-        {%- for prop in class_properties %}
-            {{ prop.name }}: {% if prop.complex %}{{ prop.creation("validated." + prop.name) }}{% else %}validated.{{ prop.name }}{% endif %},
-        {%- endfor %}
-        })
+        return new {{ name }}(validated)
     }
 }
 
-export const {{ name }}Schema = z.object({
+export const {{ name }}Schema = {% if baseclass is not none%}{{ baseclass }}Schema.extend{% else %}z.object{% endif %}({
     {%- for prop in z_properties %}
     {{ prop }},
     {%-  endfor %}

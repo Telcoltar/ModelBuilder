@@ -135,9 +135,12 @@ def build_ts(dict_repr, output_dir):
     z_properties = []
     class_properties = []
     classes_to_import = set()
+    baseclass = dict_repr.get("baseclass")
+    if baseclass is not None:
+        classes_to_import.add(baseclass)
 
     for prop in dict_repr["properties"]:
-
+        print(prop)
         current_z_string = f"{prop['name']}: "
         current_class_dict: dict[str, Union[str, bool]] = {"name": prop['name']}
 
@@ -179,7 +182,8 @@ def build_ts(dict_repr, output_dir):
             {
                 "z_properties": z_properties,
                 "class_properties": class_properties, "name": dict_repr["name"],
-                "imports": imports
+                "imports": imports,
+                "baseclass": baseclass
             }
         ))
 
@@ -187,6 +191,9 @@ def build_ts(dict_repr, output_dir):
 def build_py(dict_repr, output_dir):
     properties = []
     classes_to_import = set()
+    baseclass = dict_repr.get("baseclass")
+    if baseclass is not None:
+        classes_to_import.add(baseclass)
 
     for prop in dict_repr["properties"]:
         current_property = f"{prop['name']}: "
@@ -227,6 +234,7 @@ def build_py(dict_repr, output_dir):
             {
                 "name": dict_repr["name"],
                 "properties": properties,
-                "imports": imports
+                "imports": imports,
+                "baseclass": baseclass
             }
         ))

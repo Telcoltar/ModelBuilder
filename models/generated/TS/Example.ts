@@ -7,26 +7,17 @@ export class Example {
     boolean_prop: boolean 
     option_string_prop: Option<string> 
 
-    constructor(
-        {string_prop,int_prop,boolean_prop,option_string_prop} :
-        {string_prop?:string,int_prop?:number,boolean_prop:boolean,option_string_prop:Option<string>}
-    ) {
-        if (string_prop) {
-            this.string_prop = string_prop
-        }
-        this.int_prop = int_prop
-        this.boolean_prop = boolean_prop
-        this.option_string_prop = option_string_prop
+    constructor(init: z.infer<typeof ExampleSchema>) {
+        
+        this.string_prop = init.string_prop
+        this.int_prop = init.int_prop
+        this.boolean_prop = init.boolean_prop
+        this.option_string_prop = createOption(init.option_string_prop, false, z.string().min(5))
     }
 
     static fromJSON(parsedJSON: any) {
         const validated = ExampleSchema.parse(parsedJSON)
-        return new Example({
-            string_prop: validated.string_prop,
-            int_prop: validated.int_prop,
-            boolean_prop: validated.boolean_prop,
-            option_string_prop: createOption(validated.option_string_prop, false, z.string().min(5)),
-        })
+        return new Example(validated)
     }
 }
 
