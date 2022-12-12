@@ -65,7 +65,7 @@ def get_ts_primitive_type(input_type: str):
     if input_type in ["url", "HttpUrl"]:
         return "string"
     if input_type == "date":
-        return "string"
+        return "Date"
 
 
 def get_primitive_py_type(input_type: str):
@@ -153,6 +153,10 @@ def parse_ts_primitive(current_z_string, current_class_dict, prop):
 def parse_ts_complex(current_z_string, current_class_dict, prop):
     current_class_dict["type"] = prop["type"]
     current_z_string += f"{prop['type']}Schema"
+    if "array" in prop:
+        current_class_dict["creation"] = lambda data: f"{data}.map(datum => new {prop['type']}(datum))"
+    else:
+        current_class_dict["creation"] = lambda data: f"new {prop['type']}({data})"
     return current_z_string, current_class_dict
 
 
@@ -189,6 +193,7 @@ def build_ts(dict_repr, output_dir):
                 classes_to_import.add(prop['type'])
             current_z_string, current_class_dict = parse_ts_generic(current_z_string, current_class_dict, prop)
         else:
+            current_class_dict["complex"] = True
             classes_to_import.add(prop['type'])
             current_z_string, current_class_dict = parse_ts_complex(current_z_string, current_class_dict, prop)
 

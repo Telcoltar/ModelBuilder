@@ -16,7 +16,7 @@ export class Example {
     int_array_1_prop: number[] 
     int_array_2_prop: number[] 
     complex_array: ExampleSubType[] 
-    date_prop: string 
+    date_prop: Date 
 
     constructor(init: z.infer<typeof ExampleSchema>) {
         
@@ -32,7 +32,7 @@ export class Example {
         this.string_array_prop = init.string_array_prop
         this.int_array_1_prop = init.int_array_1_prop
         this.int_array_2_prop = init.int_array_2_prop
-        this.complex_array = init.complex_array
+        this.complex_array = init.complex_array.map(datum => new ExampleSubType(datum))
         this.date_prop = init.date_prop
     }
 
