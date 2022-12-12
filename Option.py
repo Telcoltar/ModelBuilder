@@ -36,5 +36,5 @@ OptionNone = Option(is_some=False)
 
 def Some(value: T):
     if value is None:
-        raise ValueError("value cant be None")
+        raise ValueError("value can't be None")
     return Option(value=value, is_some=True)

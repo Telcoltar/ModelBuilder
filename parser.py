@@ -4,7 +4,7 @@ from yaml import load, Loader
 from jinja2 import FileSystemLoader, Environment, select_autoescape
 from pathlib import Path
 
-primitives = ["string", "number", "boolean", "integer", "url", "HttpUrl"]
+primitives = ["string", "number", "boolean", "integer", "int", "url", "HttpUrl"]
 
 
 def parse_modifier_to_z_modifier(modifier: str, modifier_value: str):
@@ -34,6 +34,8 @@ def parse_modifier_to_z_modifier(modifier: str, modifier_value: str):
         return ".trim()"
     if modifier in ["url", "HttpUrl"]:
         return ".url()"
+    if modifier == "array":
+        return ".array()"
 
 
 def get_z_type(input_type: str):
@@ -84,6 +86,8 @@ def get_py_mod_type(input_type: str):
         return "confloat"
     if input_type == "boolean":
         return "conbool"
+    if input_type == "integer":
+        return "conint"
 
 
 def parse_modifier_to_py_modifier(modifier: str, modifier_value: str):
@@ -134,9 +138,6 @@ def parse_ts_primitive(current_z_string, current_class_dict, prop):
 
     if "modifiers" in prop:
         modifiers = prop["modifiers"]
-        if "optional" in prop:
-            modifiers = dict(**prop["modifiers"])
-            modifiers["optional"] = None
         current_z_string += parse_modifiers_to_z_string(modifiers)
     return current_z_string, current_class_dict
 
@@ -183,6 +184,12 @@ def build_ts(dict_repr, output_dir):
             classes_to_import.add(prop['type'])
             current_z_string, current_class_dict = parse_ts_complex(current_z_string, current_class_dict, prop)
 
+        if "array" in prop:
+            current_z_string += ".array()"
+            current_class_dict["type"] += "[]"
+        if "optional" in prop:
+            current_z_string += ".optional()"
+
         z_properties.append(current_z_string)
         class_properties.append(current_class_dict)
 
@@ -207,6 +214,7 @@ def build_ts(dict_repr, output_dir):
 def build_py(dict_repr, output_dir):
     properties = []
     classes_to_import = set()
+
     baseclass = dict_repr.get("baseclass")
     if baseclass is not None:
         classes_to_import.add(baseclass)
@@ -217,18 +225,25 @@ def build_py(dict_repr, output_dir):
         if "optional" in prop:
             current_property += "Optional["
 
+        if "array" in prop:
+            current_property += "list["
+
         if prop["type"] in primitives:
             if "modifiers" in prop:
                 ignored_modifiers = ["int"]
                 modifiers = [parse_modifier_to_py_modifier(mod, value)
                              for mod, value in prop['modifiers'].items() if mod not in ignored_modifiers]
-                if "int" in prop["modifiers"]:
+                if "array" in prop["modifiers"]:
+                    current_property += "list["
+                if "int" in prop["modifiers"] or prop["type"] in ["int", "integer"]:
                     if len(modifiers) > 0:
                         current_property += f"conint({','.join(modifiers)})"
                     else:
                         current_property += "int"
                 else:
                     current_property += f"{get_py_mod_type(prop['type'])}({','.join(modifiers)})"
+                if "array" in prop["modifiers"]:
+                    current_property += "]"
             else:
                 current_property += get_primitive_py_type(prop["type"])
 
@@ -239,6 +254,9 @@ def build_py(dict_repr, output_dir):
         else:
             classes_to_import.add(prop["type"])
             current_property += prop["type"]
+
+        if "array" in prop:
+            current_property += "]"
 
         if "optional" in prop:
             current_property += "]"

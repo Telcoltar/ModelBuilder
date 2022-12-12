@@ -1,0 +1,4 @@
+name: ExampleSubType
+properties:
+  - name: string_prop
+    type: string

@@ -6,6 +6,9 @@ properties:
     optional:
     modifiers:
       min: 5
+  - name: string_optional_prop
+    type: string
+    optional:
   - name: int_with_mod_prop
     type: number
     optional:
@@ -30,3 +33,17 @@ properties:
     type: number
     modifiers:
       lte: 12
+  - name: string_array_prop
+    type: string
+    array: []
+  - name: int_array_1_prop
+    type: int
+    array:
+  - name: int_array_2_prop
+    type: number
+    array:
+    modifiers:
+      int:
+  - name: complex_array
+    type: ExampleSubType
+    array:
