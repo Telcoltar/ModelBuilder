@@ -1,6 +1,7 @@
 from Option import OptionNone, Option
 from pydantic import BaseModel, constr, conint, confloat, AnyUrl, HttpUrl
 from typing import Optional
+from datetime import date
 from .ExampleSubType import ExampleSubType
 
 
@@ -18,3 +19,4 @@ class Example(BaseModel):
     int_array_1_prop: list[int]
     int_array_2_prop: list[int]
     complex_array: list[ExampleSubType]
+    date_prop: date

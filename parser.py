@@ -4,7 +4,7 @@ from yaml import load, Loader
 from jinja2 import FileSystemLoader, Environment, select_autoescape
 from pathlib import Path
 
-primitives = ["string", "number", "boolean", "integer", "int", "url", "HttpUrl"]
+primitives = ["string", "number", "boolean", "integer", "int", "url", "HttpUrl", "date"]
 
 
 def parse_modifier_to_z_modifier(modifier: str, modifier_value: str):
@@ -49,6 +49,8 @@ def get_z_type(input_type: str):
         return "z.number().int()"
     if input_type in ["url", "HttpUrl"]:
         return "z.string().url()"
+    if input_type == "date":
+        return "z.date()"
 
 
 def get_ts_primitive_type(input_type: str):
@@ -61,6 +63,8 @@ def get_ts_primitive_type(input_type: str):
     if input_type in ["int", "integer"]:
         return "number"
     if input_type in ["url", "HttpUrl"]:
+        return "string"
+    if input_type == "date":
         return "string"
 
 
@@ -77,6 +81,8 @@ def get_primitive_py_type(input_type: str):
         return "AnyUrl"
     if input_type == "HttpUrl":
         return "HttpUrl"
+    if input_type == "date":
+        return "date"
 
 
 def get_py_mod_type(input_type: str):
@@ -88,6 +94,8 @@ def get_py_mod_type(input_type: str):
         return "conbool"
     if input_type == "integer":
         return "conint"
+    if input_type == "date":
+        return "date"
 
 
 def parse_modifier_to_py_modifier(modifier: str, modifier_value: str):

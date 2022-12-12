@@ -16,6 +16,7 @@ export class Example {
     int_array_1_prop: number[] 
     int_array_2_prop: number[] 
     complex_array: ExampleSubType[] 
+    date_prop: string 
 
     constructor(init: z.infer<typeof ExampleSchema>) {
         
@@ -32,6 +33,7 @@ export class Example {
         this.int_array_1_prop = init.int_array_1_prop
         this.int_array_2_prop = init.int_array_2_prop
         this.complex_array = init.complex_array
+        this.date_prop = init.date_prop
     }
 
     static fromJSON(parsedJSON: any) {
@@ -54,4 +56,5 @@ export const ExampleSchema = z.object({
     int_array_1_prop: z.number().int().array(),
     int_array_2_prop: z.number().int().array(),
     complex_array: ExampleSubTypeSchema.array(),
+    date_prop: z.date(),
 })
