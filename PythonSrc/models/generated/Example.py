@@ -20,3 +20,4 @@ class Example(BaseModel):
     int_array_2_prop: list[int]
     complex_array: list[ExampleSubType]
     date_prop: date
+    optional_complex_prop: Optional[ExampleSubType]

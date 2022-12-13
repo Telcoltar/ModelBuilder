@@ -1,9 +1,7 @@
 /node_modules/
 /dst/
 /.idea/
-/src/
 /package.json
 /package-lock.json
 /tsconfig.json
 .DS_store
-/python_test.py

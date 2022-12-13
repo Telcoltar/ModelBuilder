@@ -24,6 +24,26 @@ export class Option<T> {
     }
     return this.value as T
   }
+
+  static createFromValidatedDataWithClass<T, S extends z.ZodType>(
+      GenericClass: {new (init: z.infer<S>): T, getSchema (): S}, validatedData: {is_some: boolean, value?: z.infer<S>}
+  ): Option<T> {
+      if (validatedData.is_some) {
+          return Some(new GenericClass(validatedData.value!))
+      }
+      return None
+  }
+
+  static createFromValidatedData<T>(validatedData: {is_some: boolean, value?: T}) {
+      if (validatedData.is_some) {
+          return Some(validatedData.value!)
+      }
+      return None
+  }
+
+  static getSchema(genericZType: z.ZodType) {
+      return createOptionSchema(genericZType)
+  }
 }
 
 export const None = new Option<never>({is_some: false, value: null})

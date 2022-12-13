@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { createOption, createOptionSchema, Option, None } from "../../../Option"
+import { createOption, createOptionSchema, Option, None } from "../../Option"
  import { ExampleSubType, ExampleSubTypeSchema } from "./ExampleSubType"
 
 export class Example {
@@ -17,6 +17,7 @@ export class Example {
     int_array_2_prop: number[] 
     complex_array: ExampleSubType[] 
     date_prop: Date 
+    optional_complex_prop?: ExampleSubType 
 
     constructor(init: z.infer<typeof ExampleSchema>) {
         
@@ -25,7 +26,7 @@ export class Example {
         this.int_with_mod_prop = init.int_with_mod_prop
         this.int_prop = init.int_prop
         this.boolean_prop = init.boolean_prop
-        this.option_string_prop = createOption(init.option_string_prop, false, z.string().min(5))
+        this.option_string_prop = Option.createFromValidatedData(init.option_string_prop)
         this.url_prop = init.url_prop
         this.http_url_prop = init.http_url_prop
         this.float_prop = init.float_prop
@@ -34,11 +35,16 @@ export class Example {
         this.int_array_2_prop = init.int_array_2_prop
         this.complex_array = init.complex_array.map(datum => new ExampleSubType(datum))
         this.date_prop = init.date_prop
+        this.optional_complex_prop = init.optional_complex_prop ? new ExampleSubType(init.optional_complex_prop) : undefined
     }
 
     static fromJSON(parsedJSON: any) {
         const validated = ExampleSchema.parse(parsedJSON)
         return new Example(validated)
+    }
+
+    static getSchema() {
+        return ExampleSchema
     }
 }
 
@@ -57,4 +63,5 @@ export const ExampleSchema = z.object({
     int_array_2_prop: z.number().int().array(),
     complex_array: ExampleSubTypeSchema.array(),
     date_prop: z.date(),
+    optional_complex_prop: ExampleSubTypeSchema.optional(),
 })

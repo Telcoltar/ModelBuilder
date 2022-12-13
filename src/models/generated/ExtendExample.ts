@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { createOption, createOptionSchema, Option, None } from "../../../Option"
+import { createOption, createOptionSchema, Option, None } from "../../Option"
  import { Example, ExampleSchema } from "./Example"
 
 export class ExtendExample extends Example {
@@ -13,6 +13,10 @@ export class ExtendExample extends Example {
     static fromJSON(parsedJSON: any) {
         const validated = ExtendExampleSchema.parse(parsedJSON)
         return new ExtendExample(validated)
+    }
+
+    static getSchema() {
+        return ExtendExampleSchema
     }
 }
 

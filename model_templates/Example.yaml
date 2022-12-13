@@ -49,3 +49,6 @@ properties:
     array:
   - name: date_prop
     type: date
+  - name: optional_complex_prop
+    type: ExampleSubType
+    optional:

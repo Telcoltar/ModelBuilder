@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { createOption, createOptionSchema, Option, None } from "../../../Option"
+import { createOption, createOptionSchema, Option, None } from "../../Option"
 
 {%- for imp in imports %}
  {{ imp }}
@@ -22,6 +22,10 @@ export class {{ name }}{% if baseclass is not none %} extends {{ baseclass }}{% 
     static fromJSON(parsedJSON: any) {
         const validated = {{ name }}Schema.parse(parsedJSON)
         return new {{ name }}(validated)
+    }
+
+    static getSchema() {
+        return {{ name }}Schema
     }
 }
 

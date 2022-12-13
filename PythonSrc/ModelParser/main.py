@@ -136,7 +136,7 @@ def parse_ts_generic(current_z_string, current_class_dict, prop):
         if "modifiers" in prop["generic"]:
             option_z_string += parse_modifiers_to_z_string(prop["generic"]["modifiers"])
         current_z_string += f"create{prop['type']}Schema({option_z_string})"
-        current_class_dict["creation"] = lambda data: f"create{prop['type']}({data}, false, {option_z_string})"
+        current_class_dict["creation"] = lambda data: f"{prop['type']}.createFromValidatedData({data})"
     return current_z_string, current_class_dict
 
 
@@ -154,13 +154,22 @@ def parse_ts_complex(current_z_string, current_class_dict, prop):
     current_class_dict["type"] = prop["type"]
     current_z_string += f"{prop['type']}Schema"
     if "array" in prop:
-        current_class_dict["creation"] = lambda data: f"{data}.map(datum => new {prop['type']}(datum))"
+        create_array_data = lambda data: f"{data}.map(datum => new {prop['type']}(datum))"
+        if "optional" in prop:
+            current_class_dict["creation"] = lambda data: f"{data} ? {create_array_data(data)} : undefined"
+        else:
+            current_class_dict["creation"] = lambda data: create_array_data(data)
     else:
-        current_class_dict["creation"] = lambda data: f"new {prop['type']}({data})"
+        create_simple_data = lambda data: f"new {prop['type']}({data})"
+        if "optional" in prop:
+            current_class_dict["creation"] = lambda data: f"{data} ? {create_simple_data(data)} : undefined"
+        else:
+            current_class_dict["creation"] = lambda data: create_simple_data(data)
+
     return current_z_string, current_class_dict
 
 
-def build_ts(dict_repr, output_dir):
+def build_ts(dict_repr, output_dir, template_folder):
     z_properties = []
     class_properties = []
     classes_to_import = set()
@@ -206,7 +215,7 @@ def build_ts(dict_repr, output_dir):
         z_properties.append(current_z_string)
         class_properties.append(current_class_dict)
 
-    env = Environment(loader=FileSystemLoader("templates"), autoescape=select_autoescape())
+    env = Environment(loader=FileSystemLoader(template_folder), autoescape=select_autoescape())
     template = env.get_template("class.ts.jinja2")
 
     imports = [
@@ -224,7 +233,7 @@ def build_ts(dict_repr, output_dir):
         ))
 
 
-def build_py(dict_repr, output_dir):
+def build_py(dict_repr, output_dir, template_folder):
     properties = []
     classes_to_import = set()
 
@@ -283,7 +292,7 @@ def build_py(dict_repr, output_dir):
         f"from .{t} import {t}" for t in classes_to_import
     ]
 
-    env = Environment(loader=FileSystemLoader("templates"), autoescape=select_autoescape())
+    env = Environment(loader=FileSystemLoader(template_folder), autoescape=select_autoescape())
     template = env.get_template("class.py.jinja2")
     with open(Path(output_dir).joinpath(f"{dict_repr['name']}.py"), "w") as f:
         f.write(template.render(
