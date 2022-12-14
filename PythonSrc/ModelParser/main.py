@@ -82,7 +82,7 @@ def get_primitive_py_type(input_type: str):
     if input_type == "HttpUrl":
         return "HttpUrl"
     if input_type == "date":
-        return "date"
+        return "datetime"
 
 
 def get_py_mod_type(input_type: str):
